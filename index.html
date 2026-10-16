@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -9,6 +9,8 @@
 <meta name="format-detection" content="telephone=no">
 <link rel="icon" type="image/webp" href="images/touxiang.webp">
 <link rel="apple-touch-icon" href="images/touxiang.webp">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-serif-sc@5.0.0/900.css">
 <title>羽生堂</title>
 <style>
 :root{
@@ -19,7 +21,7 @@
   --ink-2:#8C8983;
   --ink-3:#4E4C48;
   --ease:cubic-bezier(.16,1,.3,1);
-  --serif:"Source Han Serif SC","Noto Serif SC","Songti SC","STSong","SimSun",serif;
+  --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun",serif;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{-webkit-text-size-adjust:100%;}
@@ -1678,14 +1680,12 @@ body.revealed .app{opacity:1;}
   var $  = function(id){ return document.getElementById(id); };
   var $$ = function(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); };
 
-  /* 仅预加载首屏关键图，其余交给原生懒加载 */
   ['images/zybj.webp', 'images/touxiang.webp'].forEach(function(src){
     var img = new Image();
     img.decoding = 'async';
     img.src = src;
   });
 
-  /* 开屏 */
   var intro     = $('intro');
   var lidTop    = $('lidTop');
   var lidBottom = $('lidBottom');
@@ -1726,7 +1726,6 @@ body.revealed .app{opacity:1;}
 
   intro.addEventListener('click', finish);
 
-  /* 通知 */
   var notification = $('notification');
   var notifTimer   = null;
 
@@ -1745,7 +1744,6 @@ body.revealed .app{opacity:1;}
     notification.addEventListener('click', hideNotification);
   }
 
-  /* 头像涟漪 */
   var avatarRing = $('avatarRing');
   if (avatarRing){
     avatarRing.addEventListener('click', function(){
@@ -1759,7 +1757,6 @@ body.revealed .app{opacity:1;}
     });
   }
 
-  /* 已关注 → 躲得掉吗？ */
   var followBtn = $('followBtn');
   var followed  = true;
   followBtn.addEventListener('click', function(){
@@ -1774,7 +1771,6 @@ body.revealed .app{opacity:1;}
     if (navigator.vibrate) navigator.vibrate(12);
   });
 
-  /* 标签切换 */
   var tabs    = $$('.tab');
   var panes   = $$('.pane');
   var ink     = $('tabInk');
@@ -1816,7 +1812,6 @@ body.revealed .app{opacity:1;}
     });
   });
 
-  /* 私信按钮 */
   var dmBtn = $('dmBtn');
   if (dmBtn){
     dmBtn.addEventListener('click', function(){
@@ -1825,7 +1820,6 @@ body.revealed .app{opacity:1;}
     });
   }
 
-  /* 聊天页 */
   var chatView = $('chatView');
   var chatBack = $('chatBack');
   var lastActiveTab = 'person';
@@ -1904,7 +1898,6 @@ body.revealed .app{opacity:1;}
     });
   }
 
-  /* 导航栏吸顶 */
   var tabbar = $('tabbar');
   var scrollTicking = false;
 
@@ -1922,7 +1915,6 @@ body.revealed .app{opacity:1;}
   window.addEventListener('resize', onScroll);
   onScroll();
 
-  /* 可折叠面板 */
   $$('[data-acc]').forEach(function(acc){
     var head = acc.querySelector('.acc-head');
     if (!head) return;
@@ -1932,7 +1924,6 @@ body.revealed .app{opacity:1;}
     });
   });
 
-  /* 指示条初始化 */
   function initInk(){
     var active = document.querySelector('.tab.active');
     moveInk(active);
