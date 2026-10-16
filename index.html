@@ -517,11 +517,41 @@ body.revealed .app{opacity:1;}
 .hero-stats b{color:#E8E5DF;font-weight:600;}
 .hero-stats i{width:3px;height:3px;border-radius:50%;background:var(--ink-3);font-style:normal;}
 
+.bio-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
 .hero-bio{
   font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
   font-size:14px;line-height:1.6;letter-spacing:.02em;
   color:#8C8983;
+  flex:1;min-width:0;
 }
+
+/* ---------- 音乐按钮 ---------- */
+.music-btn{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  width:36px;height:36px;
+  flex:0 0 auto;
+  margin-right:-6px;
+  color:var(--ink-3);
+  -webkit-tap-highlight-color:transparent;
+  transition:color .5s var(--ease), transform .45s var(--ease);
+}
+.music-btn:active{transform:scale(.86);}
+.music-btn .ico{
+  position:absolute;
+  width:16px;height:16px;
+  fill:currentColor;
+  transition:opacity .4s var(--ease), transform .5s var(--ease);
+}
+.music-btn .ico-pause{opacity:0;transform:scale(.55);}
+.music-btn.playing{color:#E8E5DF;}
+.music-btn.playing .ico-play{opacity:0;transform:scale(.55);}
+.music-btn.playing .ico-pause{opacity:1;transform:scale(1);}
 
 /* ---------- 吸顶标签栏 ---------- */
 .tabbar{
@@ -932,23 +962,13 @@ body.revealed .app{opacity:1;}
 }
 
 .paw{
-  position:relative;width:22px;height:22px;
-  margin:26px auto 0;opacity:.5;pointer-events:none;
+  width:30px;height:30px;
+  margin:24px auto 0;opacity:.55;pointer-events:none;
 }
-.paw i{
-  position:absolute;left:50%;bottom:0;
-  transform:translateX(-50%);
-  width:14px;height:12px;background:#fff;
-  border-radius:50% 50% 45% 45% / 55% 55% 45% 45%;
+.paw img{
+  display:block;width:100%;height:100%;
+  object-fit:contain;
 }
-.paw span{
-  position:absolute;width:5px;height:7px;
-  background:#fff;border-radius:50%;
-}
-.paw span:nth-child(1){left:1px;top:7px;}
-.paw span:nth-child(2){left:5px;top:2px;}
-.paw span:nth-child(3){left:12px;top:2px;}
-.paw span:nth-child(4){left:16px;top:7px;}
 
 .foot{
   text-align:center;padding:24px 0 0;
@@ -1296,6 +1316,7 @@ body.revealed .app{opacity:1;}
   .notification{max-width:calc(100% - 16px);}
   .notif-icon{width:34px;height:34px;border-radius:8px;}
   .notif-title,.notif-text{font-size:12.5px;}
+  .paw{width:26px;height:26px;}
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -1389,7 +1410,17 @@ body.revealed .app{opacity:1;}
         <span><b>521k</b> 转评赞</span>
       </div>
 
-      <p class="hero-bio">我的世界乾枯　靈魂可以用來生火嗎</p>
+      <div class="bio-row">
+        <p class="hero-bio">我的世界乾枯　靈魂可以用來生火嗎</p>
+        <button class="music-btn" id="musicBtn" type="button" aria-label="播放 / 暂停音乐">
+          <svg class="ico ico-play" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 5.2v13.6L19 12z"/>
+          </svg>
+          <svg class="ico ico-pause" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7.2 5.2h3.3v13.6H7.2zm6.3 0h3.3v13.6h-3.3z"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -1586,8 +1617,7 @@ body.revealed .app{opacity:1;}
         </svg>
 
         <div class="paw" aria-hidden="true">
-          <span></span><span></span><span></span><span></span>
-          <i></i>
+          <img src="images/yanhe.webp" alt="" width="30" height="30" loading="lazy" decoding="async">
         </div>
       </div>
 
@@ -1687,7 +1717,7 @@ body.revealed .app{opacity:1;}
   </div>
   <div class="notif-body">
     <div class="notif-top">
-      <span class="notif-title">主</span>
+      <span class="notif-title">堂</span>
       <span class="notif-time">现在</span>
     </div>
     <div class="notif-text">打了才听话。</div>
@@ -1705,6 +1735,43 @@ body.revealed .app{opacity:1;}
     img.decoding = 'async';
     img.src = src;
   });
+
+  /* ---------- 背景音乐 ---------- */
+  var audio = new Audio();
+  audio.loop = true;
+  audio.preload = 'auto';
+  audio.src = 'https://music.163.com/song/media/outer/url?id=2735319670.mp3';
+
+  var musicBtn = $('musicBtn');
+
+  function setMusicUI(on){
+    if (musicBtn) musicBtn.classList.toggle('playing', !!on);
+  }
+
+  function playMusic(){
+    var p = audio.play();
+    if (p && p.then){
+      p.then(function(){ setMusicUI(true); })
+       .catch(function(){ setMusicUI(false); });
+    } else {
+      setMusicUI(true);
+    }
+  }
+
+  function toggleMusic(){
+    if (audio.paused) playMusic();
+    else { audio.pause(); setMusicUI(false); }
+  }
+
+  audio.addEventListener('play',  function(){ setMusicUI(true);  });
+  audio.addEventListener('pause', function(){ setMusicUI(false); });
+
+  if (musicBtn){
+    musicBtn.addEventListener('click', function(){
+      toggleMusic();
+      if (navigator.vibrate) navigator.vibrate(8);
+    });
+  }
 
   var intro     = $('intro');
   var lidTop    = $('lidTop');
@@ -1726,6 +1793,7 @@ body.revealed .app{opacity:1;}
     finished = true;
 
     intro.classList.add('animating');
+    playMusic();
     if (navigator.vibrate) navigator.vibrate(6);
 
     setTimeout(function(){ setLid(0.25, 620, 'cubic-bezier(.4, 0, .2, 1)'); }, 400);
